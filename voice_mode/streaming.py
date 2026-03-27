@@ -420,10 +420,13 @@ async def stream_pcm_audio(
     except Exception as e:
         logger.error(f"PCM streaming failed: {e}")
         return False, metrics
-        
+
     finally:
         if stream:
-            stream.close()
+            try:
+                stream.close()
+            except Exception as _e:
+                logger.debug(f"PCM stream: close error (ignored): {_e}")
 
 
 async def stream_tts_audio(
@@ -533,7 +536,11 @@ async def stream_with_buffering(
                 # Check for PTT interrupt
                 if _ptt_interrupt is not None and _ptt_interrupt.is_set():
                     logger.info("Buffered stream: PTT interrupt received, stopping playback")
-                    stream.abort()
+                    try:
+                        stream.abort()
+                    except Exception as _abort_err:
+                        logger.debug(f"Buffered stream: abort error (ignored): {_abort_err}")
+                    metrics.interrupted = True
                     break
 
                 if chunk:
@@ -619,8 +626,14 @@ async def stream_with_buffering(
     except Exception as e:
         logger.error(f"Buffered streaming failed: {e}")
         return False, metrics
-        
+
     finally:
         if stream:
-            stream.stop()
-            stream.close()
+            try:
+                stream.stop()
+            except Exception as _e:
+                logger.debug(f"Buffered stream: stop error (ignored): {_e}")
+            try:
+                stream.close()
+            except Exception as _e:
+                logger.debug(f"Buffered stream: close error (ignored): {_e}")
