@@ -216,6 +216,8 @@ class PushToTalkRecorder:
     Hold the PTT key to record; release to stop and send audio.
     If the key is already held (e.g., the user pressed it to interrupt TTS),
     recording starts immediately without waiting.
+    If the key was tapped (pressed then quickly released) to interrupt TTS,
+    recording starts immediately and stops automatically on silence.
 
     Usage:
         recorder = PushToTalkRecorder()
@@ -229,6 +231,11 @@ class PushToTalkRecorder:
     def record(self, max_duration: float = 120.0) -> Tuple[np.ndarray, bool]:
         """
         Wait for the PTT key to be held, record while held, stop on release.
+
+        If the key was pressed (e.g. to interrupt TTS) but not yet held when
+        this method is called, it waits briefly for the user to hold it down.
+        Recording only happens while the key is held; releasing sends the audio.
+        If released with silence, the caller should discard the result.
 
         Returns:
             (audio_data, speech_detected)
@@ -244,14 +251,26 @@ class PushToTalkRecorder:
             logger.warning("PTT: listener not running, restarting...")
             _start_global_listener()
 
-        # If key not already held, wait for user to press it
+        # If key not already held, wait for user to press+hold it
         if not _key_held.is_set():
-            _key_pressed.clear()
-            logger.info(f"🎤 PTT: hold [{PTT_KEY_NAME}] to speak...")
+            if _key_pressed.is_set():
+                # Key was pressed (e.g. to interrupt TTS) but released before
+                # record() was called — wait for the user to press+hold again.
+                _key_pressed.clear()
+                logger.info(f"🎤 PTT: [{PTT_KEY_NAME}] interrupted TTS — hold to speak...")
+            else:
+                logger.info(f"🎤 PTT: hold [{PTT_KEY_NAME}] to speak...")
+
             # Wait up to 5 minutes for a key press
             if not _key_pressed.wait(timeout=300.0):
                 logger.warning("PTT: timed out waiting for key press")
                 return np.array([], dtype=np.int16), False
+            _key_pressed.clear()
+
+            # Wait for key to be held (handles race between press event and hold state)
+            hold_deadline = time.time() + 0.3
+            while not _key_held.is_set() and time.time() < hold_deadline:
+                time.sleep(0.02)
         else:
             logger.info("🔴 PTT: key already held — starting recording immediately")
 

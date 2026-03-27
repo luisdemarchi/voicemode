@@ -72,6 +72,7 @@ For manual setup, see the [Getting Started Guide](docs/tutorials/getting-started
 - **Works offline** - optional local voice services (Whisper STT, Kokoro TTS)
 - **Low latency** - fast enough to feel like a real conversation
 - **Smart silence detection** - stops recording when you stop speaking
+- **Push-to-Talk (PTT)** - hold a key to record, release to send; tap to interrupt TTS
 - **Privacy options** - run entirely locally or use cloud services
 
 ## Compatibility
@@ -92,6 +93,31 @@ voicemode config edit
 ```
 
 See the [Configuration Guide](docs/guides/configuration.md) for all options.
+
+## Push-to-Talk (PTT)
+
+PTT mode lets you control recording with a key instead of silence detection.
+
+**Setup:**
+
+```bash
+export VOICEMODE_PTT_MODE=hold
+export VOICEMODE_PTT_KEY=ctrl   # any key: F9, space, ctrl, alt, F1-F12…
+```
+
+> **macOS:** PTT requires Accessibility permissions. Go to **System Settings → Privacy & Security → Accessibility** and add your terminal app.
+
+**How it works:**
+
+| Action | Result |
+|--------|--------|
+| Hold key | Mic opens, recording starts |
+| Release key | Recording stops, audio is sent |
+| Press key while assistant is speaking | TTS is interrupted immediately |
+| Hold key after interrupting TTS | Mic opens, record your message |
+| Release with silence | Audio is discarded (nothing sent) |
+
+This gives you full control over the conversation flow: interrupt at any moment, then hold to speak.
 
 ## Permissions Setup (Optional)
 
