@@ -36,6 +36,7 @@ POLYGLOT TTS RULES (for correct pronunciation of mixed-language text):
 DO tag (English pronunciation differs from Portuguese):
 - Compound tech terms: <en>push-to-talk</en>, <en>pull request</en>, <en>code review</en>
 - Words with English-specific sounds: <en>feature</en>, <en>pipeline</en>, <en>release</en>, <en>deploy</en>
+- Repository and service names with English words: <en>file-service</en>, <en>web-app</en>, <en>chat-service</en>, <en>api-gateway</en>
 
 Do NOT tag (already naturalized in Brazilian Portuguese — spoken the same way):
 - Git terms: commit, push, merge, branch, rebase, clone, diff, stash

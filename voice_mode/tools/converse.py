@@ -1285,6 +1285,11 @@ DO tag (English pronunciation differs significantly from Brazilian Portuguese):
   converse(message="Implementei o <en>push-to-talk</en> com sucesso.")
   converse(message="O <en>pipeline</en> falhou na etapa de <en>release</en>.")
   converse(message="Abri um <en>pull request</en> para revisão.")
+  converse(message="O PR foi aberto no <en>file-service</en>.")
+  converse(message="Erro no repositório <en>web-app</en>.")
+
+- Repository and service names with English words/compounds (kebab-case or camelCase):
+  <en>file-service</en>, <en>web-app</en>, <en>chat-service</en>, <en>api-gateway</en>, etc.
 
 Do NOT tag — already naturalized in Brazilian tech vocabulary (spoken the same way):
 - Git flow: commit, push, merge, branch, rebase, clone, diff, stash, tag, fetch
