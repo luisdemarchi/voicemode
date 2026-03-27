@@ -206,6 +206,25 @@ if PTT_ENABLED:
 
 
 # ---------------------------------------------------------------------------
+# Beep helper
+# ---------------------------------------------------------------------------
+
+def _play_beep(frequency: float = 880.0, duration: float = 0.12, volume: float = 0.3, sample_rate: int = 24000) -> None:
+    """Play a short sine-wave beep to signal that the mic is open."""
+    try:
+        import sounddevice as sd
+        t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+        # Sine wave with quick fade-out to avoid click
+        wave = np.sin(2 * np.pi * frequency * t).astype(np.float32) * volume
+        fade = np.linspace(1.0, 0.0, len(wave)) ** 2
+        wave *= fade
+        sd.play(wave, samplerate=sample_rate)
+        sd.wait()
+    except Exception as exc:
+        logger.debug(f"PTT beep failed (ignored): {exc}")
+
+
+# ---------------------------------------------------------------------------
 # Recorder
 # ---------------------------------------------------------------------------
 
@@ -275,6 +294,7 @@ class PushToTalkRecorder:
             logger.info("🔴 PTT: key already held — starting recording immediately")
 
         logger.info(f"🔴 PTT: recording... release [{PTT_KEY_NAME}] to send")
+        _play_beep()
 
         chunks = []
 
