@@ -1290,7 +1290,7 @@ Do NOT tag — already naturalized in Brazilian tech vocabulary (spoken the same
 - Git flow: commit, push, merge, branch, rebase, clone, diff, stash, tag, fetch
 - Dev terms: backend, frontend, bug, sprint, task, ticket, status, feedback, link, build,
   deploy, fix, feature, chore, review, readme, token, cache, endpoint, timeout, retry
-- Alphanumeric IDs: S3-123, PR-456, feat/fix/chore prefixes, main, master, devel
+- Alphanumeric IDs and tools: S3-123, PR, PR-456, feat/fix/chore prefixes, main, master, devel, Slack
 - Numbers, URLs, file paths, code snippets, variable names
 </voice_polyglot_rules>
 

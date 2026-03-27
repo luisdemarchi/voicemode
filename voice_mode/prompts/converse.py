@@ -40,6 +40,6 @@ DO tag (English pronunciation differs from Portuguese):
 Do NOT tag (already naturalized in Brazilian Portuguese — spoken the same way):
 - Git terms: commit, push, merge, branch, rebase, clone, diff, stash
 - Dev terms: backend, frontend, bug, sprint, task, ticket, status, feedback, link, build, tag
-- Alphanumeric IDs and codes: S3-123, PR-456, feat, fix, chore, main, master
+- Alphanumeric IDs and tools: S3-123, PR, PR-456, feat, fix, chore, main, master, devel, Slack
 - Numbers, URLs, file paths, code snippets
 - Words already assimilated into Brazilian tech vocabulary"""
