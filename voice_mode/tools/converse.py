@@ -1698,20 +1698,35 @@ consult the MCP resources listed above.
                 if event_logger:
                     event_logger.log_event(event_logger.RECORDING_START)
 
-                record_start = time.perf_counter()
-                logger.debug(f"About to call record_audio_with_silence_detection with duration={listen_duration_max}, disable_silence_detection={disable_silence_detection}, min_duration={listen_duration_min}, vad_aggressiveness={vad_aggressiveness}")
-                audio_data, speech_detected = await asyncio.get_event_loop().run_in_executor(
-                    None, record_audio_smart, listen_duration_max, disable_silence_detection, listen_duration_min, vad_aggressiveness
-                )
-                timings['record'] = time.perf_counter() - record_start
-                
+                # Recording loop: in PTT mode, retry silently on timeout (empty audio)
+                # instead of returning an error that would close the conversation.
+                from voice_mode.ptt import PTT_ENABLED as _ptt_enabled
+                while True:
+                    record_start = time.perf_counter()
+                    logger.debug(f"About to call record_audio_with_silence_detection with duration={listen_duration_max}, disable_silence_detection={disable_silence_detection}, min_duration={listen_duration_min}, vad_aggressiveness={vad_aggressiveness}")
+                    audio_data, speech_detected = await asyncio.get_event_loop().run_in_executor(
+                        None, record_audio_smart, listen_duration_max, disable_silence_detection, listen_duration_min, vad_aggressiveness
+                    )
+                    timings['record'] = time.perf_counter() - record_start
+
+                    if len(audio_data) > 0:
+                        break  # got audio — proceed normally
+
+                    if not _ptt_enabled:
+                        # VAD mode: empty audio is a real error
+                        result = "Error: Could not record audio"
+                        return result
+
+                    # PTT mode: timeout waiting for key press — keep listening silently
+                    logger.info("PTT: no audio recorded (timeout) — waiting for key press again...")
+
                 # Log recording end
                 if event_logger:
                     event_logger.log_event(event_logger.RECORDING_END, {
                         "duration": timings['record'],
                         "samples": len(audio_data)
                     })
-                
+
                 # Play "finished" feedback sound
                 await play_audio_feedback(
                     "finished",
@@ -1721,14 +1736,10 @@ consult the MCP resources listed above.
                     chime_leading_silence=chime_leading_silence,
                     chime_trailing_silence=chime_trailing_silence
                 )
-                
+
                 # Mark the end of recording - this is when user expects response to start
                 user_done_time = time.perf_counter()
                 logger.info(f"Recording finished at {user_done_time - tts_start:.1f}s from start")
-                
-                if len(audio_data) == 0:
-                    result = "Error: Could not record audio"
-                    return result
                 
                 # Track STT-specific metrics (defined here to be in scope for event logging later)
                 stt_metrics = None
