@@ -1273,22 +1273,25 @@ Example: user says "execute task XYZ":
 </voice_brevity_rules>
 
 <voice_polyglot_rules>
-POLYGLOT TTS — TAG ENGLISH WORDS IN PORTUGUESE SPEECH:
-When the session language is Portuguese and you include English words/terms in your message,
-wrap the English portions in <en>...</en> tags so they are synthesized with the correct accent.
+POLYGLOT TTS — TAG ENGLISH WORDS IN PORTUGUESE (BRAZIL) SPEECH:
+When the session language is Portuguese (Brazil) and you include English words, wrap ONLY the
+words where the English pronunciation meaningfully differs from how a Brazilian would say it.
 The tags are stripped from the spoken text — only the content inside is read aloud.
 
-Examples of correct tagging:
-  converse(message="O <en>backend</en> retornou um erro de <en>timeout</en>.")
-  converse(message="Implementei o <en>push-to-talk</en> com sucesso.")
-  converse(message="O <en>pull request</en> foi aprovado.")
+The goal is accent correction, not translation. Most tech terms are already naturalized in
+Brazilian Portuguese and should NOT be tagged.
 
-Tag guidelines:
-- Tag English nouns, verbs, and phrases that are read in English: backend, frontend, deploy,
-  push, pull, commit, merge, branch, build, bug, fix, feature, release, sprint, review,
-  timeout, retry, fallback, cache, queue, worker, token, payload, endpoint, etc.
-- Do NOT tag: numbers, URLs, code variables, proper names pronounced the same in both languages.
-- Do NOT tag entire sentences — only the English words within a Portuguese sentence.
+DO tag (English pronunciation differs significantly from Brazilian Portuguese):
+  converse(message="Implementei o <en>push-to-talk</en> com sucesso.")
+  converse(message="O <en>pipeline</en> falhou na etapa de <en>release</en>.")
+  converse(message="Abri um <en>pull request</en> para revisão.")
+
+Do NOT tag — already naturalized in Brazilian tech vocabulary (spoken the same way):
+- Git flow: commit, push, merge, branch, rebase, clone, diff, stash, tag, fetch
+- Dev terms: backend, frontend, bug, sprint, task, ticket, status, feedback, link, build,
+  deploy, fix, feature, chore, review, readme, token, cache, endpoint, timeout, retry
+- Alphanumeric IDs: S3-123, PR-456, feat/fix/chore prefixes, main, master, devel
+- Numbers, URLs, file paths, code snippets, variable names
 </voice_polyglot_rules>
 
 

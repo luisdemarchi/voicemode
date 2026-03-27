@@ -30,8 +30,16 @@ PROGRESS FEEDBACK RULES FOR VOICE (always follow these for tasks with tool calls
   converse("Analisando.", wait_for_response=false)  ← parallel with →  bash("...") or Agent(...)
 
 POLYGLOT TTS RULES (for correct pronunciation of mixed-language text):
-- When responding in Portuguese and including English words or phrases, wrap them in <en>...</en> tags
-- Example: "Implementei o <en>push-to-talk</en> com sucesso"
-- Example: "O <en>backend</en> está usando <en>retry</en> automático"
-- Only tag actual English terms, not Portuguese words that look similar to English
-- Do NOT tag: proper nouns that are read the same in both languages, numbers, URLs, code snippets"""
+- When responding in Portuguese (Brazil) and including English words that a Brazilian would NOT naturally pronounce in Portuguese, wrap them in <en>...</en> tags
+- The goal is accent correction — only tag words where the English pronunciation differs meaningfully from how a Brazilian would say it
+
+DO tag (English pronunciation differs from Portuguese):
+- Compound tech terms: <en>push-to-talk</en>, <en>pull request</en>, <en>code review</en>
+- Words with English-specific sounds: <en>feature</en>, <en>pipeline</en>, <en>release</en>, <en>deploy</en>
+
+Do NOT tag (already naturalized in Brazilian Portuguese — spoken the same way):
+- Git terms: commit, push, merge, branch, rebase, clone, diff, stash
+- Dev terms: backend, frontend, bug, sprint, task, ticket, status, feedback, link, build, tag
+- Alphanumeric IDs and codes: S3-123, PR-456, feat, fix, chore, main, master
+- Numbers, URLs, file paths, code snippets
+- Words already assimilated into Brazilian tech vocabulary"""
